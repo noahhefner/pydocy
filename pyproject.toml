@@ -1,0 +1,17 @@
+[project]
+name = "pydocy"
+version = "0.1.0"
+description = "Documentation generator for Python"
+readme = "README.md"
+authors = [
+    { name = "Noah Hefner", email = "nhefner127+github@protonmail.com" }
+]
+requires-python = ">=3.14"
+dependencies = []
+
+[project.scripts]
+pydocy = "pydocy.cli:main"
+
+[build-system]
+requires = ["uv_build>=0.12.15,<0.13.0"]
+build-backend = "uv_build"
