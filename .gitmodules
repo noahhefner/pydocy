@@ -1,3 +1,3 @@
-[submodule "test/how-tui"]
-	path = test/how-tui
+[submodule "tests/how-tui"]
+	path = tests/how-tui
 	url = git@github.com:noahhefner/how-tui.git

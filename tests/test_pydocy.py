@@ -1,10 +1,11 @@
+import logging
 from logging import getLogger
-from pydocy.walk_source import walk_source
 from pathlib import Path
 
-import logging
+from pydocy.walk_source import walk_source
 
 logger: logging.Logger = getLogger(__name__)
+
 
 def test_tree():
 

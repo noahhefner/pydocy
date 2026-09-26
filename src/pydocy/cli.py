@@ -1,6 +1,7 @@
 import argparse
 from pathlib import Path
 
+from pydocy.parse import parse
 from pydocy.walk_source import walk_source
 
 
@@ -10,5 +11,11 @@ def main() -> None:
 
     args = parser.parse_args()
 
-    result = walk_source(args.path, [])
+    result = walk_source(args.path)
     print(result)
+
+    parse(result)
+
+    for module in result:
+        print(module)
+        print()

@@ -1,12 +1,13 @@
 import ast
 from pathlib import Path
 
-from pydocy.models import PyModule, PyClass, PyFunction
+from pydocy.models import PyClass, PyFunction, PyModule
 
 
 def walk_source(path: Path) -> list[PyModule]:
 
     return _walk_source(path, [])
+
 
 def _walk_source(path, modules: list[PyModule]):
 
@@ -27,35 +28,48 @@ def _walk_source(path, modules: list[PyModule]):
 def _parse_module(path: Path) -> PyModule:
 
     tree: ast.Module = ast.parse(path.read_text())
-    module = PyModule(module_name=path.name, path=path, doc_raw=ast.get_docstring(tree))
+    module = PyModule(
+        doc_raw=ast.get_docstring(tree) or "",
+        module_name=path.name,
+        path=path,
+        classes=[],
+        functions=[],
+        submodules=[],
+    )
     for node in ast.walk(tree):
         if isinstance(node, ast.FunctionDef):
             func_node = PyFunction(
-                func_name=node.name, is_async=False, doc_raw=ast.get_docstring(node)
+                doc_raw=ast.get_docstring(node) or "",
+                func_name=node.name,
+                is_async=False,
             )
             module.functions.append(func_node)
         elif isinstance(node, ast.AsyncFunctionDef):
             func_node = PyFunction(
-                func_name=node.name, is_async=True, doc_raw=ast.get_docstring(node)
+                doc_raw=ast.get_docstring(node) or "",
+                is_async=True,
+                func_name=node.name,
             )
             module.functions.append(func_node)
         elif isinstance(node, ast.ClassDef):
             class_node = PyClass(
-                class_name=node.name, methods=[], doc_raw=ast.get_docstring(node)
+                doc_raw=ast.get_docstring(node) or "",
+                class_name=node.name,
+                methods=[],
             )
             for child_node in ast.walk(node):
-                if isinstance(node, ast.FunctionDef):
+                if isinstance(child_node, ast.FunctionDef):
                     method_node = PyFunction(
+                        doc_raw=ast.get_docstring(child_node) or "",
                         func_name=child_node.name,
                         is_async=False,
-                        doc_raw=ast.get_docstring(child_node),
                     )
                     class_node.methods.append(method_node)
-                elif isinstance(node, ast.AsyncFunctionDef):
+                elif isinstance(child_node, ast.AsyncFunctionDef):
                     method_node = PyFunction(
+                        doc_raw=ast.get_docstring(child_node) or "",
                         func_name=child_node.name,
                         is_async=True,
-                        doc_raw=ast.get_docstring(child_node),
                     )
                     class_node.methods.append(method_node)
             module.classes.append(class_node)

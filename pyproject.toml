@@ -27,3 +27,8 @@ dev = [
 
 [tool.pytest.ini_options]
 addopts = "--ignore=tests/how-tui"
+
+[tool.ruff]
+exclude = [
+    "tests/how-tui",
+]
