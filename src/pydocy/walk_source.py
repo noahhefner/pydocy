@@ -1,33 +1,14 @@
 import ast
-from dataclasses import dataclass, field
 from pathlib import Path
 
-
-@dataclass
-class PyFunction:
-    func_name: str
-    is_async: bool
-    doc_raw: str | None = None
+from pydocy.models import PyModule, PyClass, PyFunction
 
 
-@dataclass
-class PyClass:
-    class_name: str
-    methods: list[PyFunction] = field(default_factory=list)
-    doc_raw: str | None = None
+def walk_source(path: Path) -> list[PyModule]:
 
+    return _walk_source(path, [])
 
-@dataclass
-class PyModule:
-    module_name: str
-    path: Path
-    classes: list[PyClass] = field(default_factory=list)
-    functions: list[PyFunction] = field(default_factory=list)
-    submodules: list[PyModule] = field(default_factory=list)
-    doc_raw: str | None = None
-
-
-def walk_source(path: Path, modules: list[PyModule]) -> list[PyModule]:
+def _walk_source(path, modules: list[PyModule]):
 
     if path.is_file() and path.name.endswith(".py"):
         modules.append(_parse_module(path))
@@ -35,7 +16,7 @@ def walk_source(path: Path, modules: list[PyModule]) -> list[PyModule]:
     elif path.is_dir():
         for child_path in path.iterdir():
             if child_path.is_dir():
-                return walk_source(child_path, modules)
+                return _walk_source(child_path, modules)
 
             elif child_path.is_file() and child_path.name.endswith(".py"):
                 modules.append(_parse_module(child_path))
